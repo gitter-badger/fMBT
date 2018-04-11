@@ -397,7 +397,7 @@ module RemoteRBAAL
                         if rv == nil or rv == true
                             rv = action_number
                         end
-                        if (rv.class.to_s == "Fixnum" and (rv == 0 or rv > action_names.length)) or (rv.class.to_s != "Fixnum")
+                        if (rv.integer? and (rv == 0 or rv > action_names.length)) or (!rv.integer?)
                             RemoteRBAAL.fmbtstderr("adapter() of action \"#{action_names[action_number-1]}\" returned #{rv}")
                             rv = 0
                         end
