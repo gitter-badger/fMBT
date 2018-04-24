@@ -192,6 +192,32 @@ std::string filetype(const std::string& _s)
   return r.substr(0,found);
 }
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+char* UTF8ToGBK(const char* strUTF8)  
+{  
+    int len = MultiByteToWideChar(CP_UTF8, 0, strUTF8, -1, NULL, 0);  
+    wchar_t* wszGBK = new wchar_t[len+1];  
+    memset(wszGBK, 0, len*2+2);  
+    MultiByteToWideChar(CP_UTF8, 0, strUTF8, -1, wszGBK, len);  
+    len = WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, NULL, 0, NULL, NULL);  
+    char* szGBK = new char[len+1];  
+    memset(szGBK, 0, len+1);  
+    WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, szGBK, len, NULL, NULL);  
+    return szGBK;
+}
+
+char* convert_encoding(const char* strUTF8)
+{
+  int encoding_code = GetConsoleOutputCP();
+  if (encoding_code == 936) {
+    return UTF8ToGBK(strUTF8);
+  }else{
+    return const_cast<char*>(strUTF8);
+  }
+}
+
+#endif
+
 char* unescape_string(char* msg)
 {
   int l=std::strlen(msg);
@@ -251,7 +277,11 @@ char* escape_string(const char* msg)
   return ret;
 #else
   char* ss = g_uri_escape_string(msg,NULL,TRUE);
+  #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+  return convert_encoding(ss) ;
+  #else
   return ss ;
+  #endif
 #endif
 }
 
@@ -850,7 +880,13 @@ ssize_t bgetline(char **lineptr, size_t *n, GIOChannel* stream, Log& log,GIOChan
 	  }
 	} else {
 	  // We have something to stdout
-      log.print("%s\n",lineptr);
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+    char* lineptr_gbk = convert_encoding(*lineptr);
+    log.print("%s\n",lineptr_gbk);
+    #else
+    log.print("%s\n",lineptr);
+    #endif
+    
 	  g_free(*lineptr);
 	  *lineptr = NULL;
 	  log_redirect = true;
