@@ -68,12 +68,12 @@ class AALModel
             end
             return rv
         rescue Exception=>e
-            @log.log("Exception #{e.class} in #{func.func_name} #{e.message}")
-            @log.log(traceback.format_exc())
+            @log.log("Exception #{e.class} in #{func_name} #{e.message}")
+            @log.log($!.backtrace)
             if guard_list
                 guard_list.pop()
-            raise
             end
+            raise
         end
     end
 

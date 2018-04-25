@@ -404,7 +404,7 @@ module RemoteRBAAL
                     rescue Exception=>e
                         #todo: find  what is Assertion for
                         msg = "Assertion failure"
-                        RemoteRBAAL.fmbtstderr("#{msg} at adapter() of \"#{action_names[action_number-1]}\" #{e.class} #{e.message}\n#{format_pythonaalrescueion()}")
+                        RemoteRBAAL.fmbtstderr("#{msg} at adapter() of \"#{action_names[action_number-1]}\" #{e.class} #{e.message}\n")
                         rv = 0
                     end
                     RemoteRBAAL.put(rv)
