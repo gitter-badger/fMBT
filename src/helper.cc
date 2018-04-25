@@ -199,10 +199,10 @@ char* UTF8ToGBK(const char* strUTF8)
     wchar_t* wszGBK = new wchar_t[len+1];  
     memset(wszGBK, 0, len*2+2);  
     MultiByteToWideChar(CP_UTF8, 0, strUTF8, -1, wszGBK, len);  
-    len = WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, NULL, 0, NULL, NULL);  
+    len = WideCharToMultiByte(936, 0, wszGBK, -1, NULL, 0, NULL, NULL);  
     char* szGBK = new char[len+1];  
     memset(szGBK, 0, len+1);  
-    WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, szGBK, len, NULL, NULL);  
+    WideCharToMultiByte(936, 0, wszGBK, -1, szGBK, len, NULL, NULL);  
     return szGBK;
 }
 
@@ -278,9 +278,10 @@ char* escape_string(const char* msg)
 #else
   char* ss = g_uri_escape_string(msg,NULL,TRUE);
   #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-  return convert_encoding(ss) ;
+    char* converted_str = convert_encoding(ss);
+    return converted_str;
   #else
-  return ss ;
+    return ss ;
   #endif
 #endif
 }
